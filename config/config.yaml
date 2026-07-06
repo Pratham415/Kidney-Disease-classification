@@ -6,3 +6,14 @@ data_ingestion:
   source_URL: https://drive.google.com/file/d/1w_rMpEHM4itYXSTgjwm0i5dUcFI2luZL/view?usp=drive_link
   local_data_file: artifacts/data_ingestion/data.zip
   unzip_dir: artifacts/data_ingestion
+
+
+prepare_base_model_hyperspectral:
+  root_dir: artifacts/prepare_base_model/hyperspectral
+  base_model_path: artifacts/prepare_base_model/hyperspectral/base_model.h5
+  updated_base_model_path: artifacts/prepare_base_model/hyperspectral/base_model_updated.h5
+
+prepare_base_model_multispectral:
+  root_dir: artifacts/prepare_base_model/multispectral
+  base_model_path: artifacts/prepare_base_model/multispectral/base_model.h5
+  updated_base_model_path: artifacts/prepare_base_model/multispectral/base_model_updated.h5
