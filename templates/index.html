@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Renal Spectral Diagnostic Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0A;
+    --panel:#141210;
+    --panel-border:#2A241E;
+    --panel-raised:#1B1815;
+    --orange:#FF7A29;
+    --orange-dim:#FF7A2922;
+    --orange-soft:#FF7A2955;
+    --alert:#FF4D2E;
+    --alert-dim:#FF4D2E1E;
+    --text:#F5F1EC;
+    --text-muted:#8A8078;
+    --text-faint:#4A433C;
+    --radius:3px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+
+  body{
+    background:
+      radial-gradient(circle at 12% -5%, #1A120A 0%, transparent 42%),
+      radial-gradient(circle at 100% 100%, #150D06 0%, transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    line-height:1.5;
+  }
+
+  ::selection{ background:var(--orange-dim); color:var(--orange); }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 32px;
+    border-bottom:1px solid var(--panel-border);
+    background:linear-gradient(180deg, #0D0B09, #0A0A0A);
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:30px; height:30px;
+    border:1.5px solid var(--orange);
+    border-radius:50%;
+    position:relative;
+    flex-shrink:0;
+  }
+  .brand-mark::before{
+    content:"";
+    position:absolute; inset:6px;
+    border:1px solid var(--orange);
+    border-radius:50%;
+    opacity:.5;
+  }
+  .brand-mark::after{
+    content:"";
+    position:absolute; top:50%; left:50%;
+    width:3px; height:3px;
+    background:var(--orange);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    box-shadow:0 0 7px 1.5px var(--orange);
+  }
+  .brand-text h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:16px; font-weight:600; margin:0; letter-spacing:0.02em;
+  }
+  .brand-text p{
+    margin:0; font-size:11px; color:var(--text-muted);
+    font-family:'JetBrains Mono', monospace; letter-spacing:0.03em;
+  }
+  .status-chip{
+    display:flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px; color:var(--text-muted);
+    padding:6px 12px;
+    border:1px solid var(--panel-border);
+    border-radius:20px;
+  }
+  .status-dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--orange);
+    box-shadow:0 0 6px 1.5px var(--orange-soft);
+  }
+
+  /* ---------- layout ---------- */
+  .console{
+    display:grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap:1px;
+    max-width:1180px;
+    margin:0 auto;
+    background:var(--panel-border);
+    border-left:1px solid var(--panel-border);
+    border-right:1px solid var(--panel-border);
+    min-height:calc(100vh - 68px);
+  }
+  @media (max-width: 860px){ .console{ grid-template-columns:1fr; } }
+
+  .pane{ background:var(--bg); padding:32px; }
+
+  .pane-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px; letter-spacing:0.08em;
+    color:var(--text-faint); text-transform:uppercase;
+    margin-bottom:18px;
+    display:flex; justify-content:space-between;
+  }
+
+  /* ---------- intake bay ---------- */
+  .intro{ margin-bottom:28px; }
+  .intro h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:24px; font-weight:600; line-height:1.25; margin:0 0 10px;
+  }
+  .intro p{ color:var(--text-muted); font-size:14px; max-width:44ch; margin:0; }
+
+  .modality-select{ display:flex; gap:8px; margin-bottom:20px; }
+  .modality-btn{
+    flex:1; background:var(--panel);
+    border:1px solid var(--panel-border);
+    color:var(--text-muted);
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; padding:12px 10px;
+    border-radius:var(--radius);
+    cursor:pointer; transition:all .15s ease; text-align:left;
+  }
+  .modality-btn span{
+    display:block; font-family:'Inter', sans-serif;
+    font-size:13px; font-weight:600; color:var(--text); margin-top:3px;
+  }
+  .modality-btn:hover{ border-color:#3A322A; }
+  .modality-btn.active{
+    border-color:var(--orange);
+    background:var(--orange-dim);
+    color:var(--orange);
+  }
+  .modality-btn.active span{ color:var(--text); }
+
+  .dropzone{
+    position:relative;
+    border:1.5px dashed var(--panel-border);
+    border-radius:var(--radius);
+    min-height:320px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; overflow:hidden;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 23px, #ffffff05 23px, #ffffff05 24px),
+      repeating-linear-gradient(90deg, transparent, transparent 23px, #ffffff05 23px, #ffffff05 24px);
+    transition:border-color .15s ease;
+  }
+  .dropzone:hover, .dropzone.dragover{ border-color:var(--orange); }
+  .dropzone-empty{ text-align:center; color:var(--text-faint); pointer-events:none; }
+  .dropzone-empty .icon{ font-size:28px; margin-bottom:10px; color:var(--text-muted); }
+  .dropzone-empty p{ font-family:'JetBrains Mono', monospace; font-size:12px; margin:0; }
+  .dropzone-empty p.sub{ color:var(--text-faint); margin-top:4px; font-size:11px; }
+  .dropzone img{ width:100%; height:100%; object-fit:cover; display:none; }
+  .dropzone.has-image img{ display:block; }
+  .dropzone.has-image .dropzone-empty{ display:none; }
+  #fileInput{ display:none; }
+
+  .scanline{
+    position:absolute; left:0; right:0; height:2px;
+    background:linear-gradient(90deg, transparent, var(--orange) 20%, var(--orange) 80%, transparent);
+    box-shadow:0 0 14px 2px var(--orange);
+    top:0; opacity:0; pointer-events:none;
+  }
+  .scanline.active{
+    animation: sweep 1.6s cubic-bezier(.4,0,.2,1) infinite;
+    opacity:1;
+  }
+  @keyframes sweep{
+    0%{ top:0; opacity:0; }
+    8%{ opacity:1; }
+    92%{ opacity:1; }
+    100%{ top:100%; opacity:0; }
+  }
+  .scan-overlay{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, #0A0A0A00 60%, #0A0A0ACC 100%);
+    display:none; align-items:flex-end; padding:14px;
+  }
+  .scan-overlay.active{ display:flex; }
+  .scan-overlay span{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px; color:var(--orange); letter-spacing:0.04em;
+  }
+
+  .run-btn{
+    width:100%; margin-top:20px; padding:14px;
+    background:var(--orange); color:#0A0A0A;
+    border:none; border-radius:var(--radius);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600; font-size:14px; letter-spacing:0.02em;
+    cursor:pointer;
+    transition:filter .15s ease, transform .1s ease, box-shadow .15s ease;
+  }
+  .run-btn:hover:not(:disabled){
+    filter:brightness(1.08);
+    box-shadow:0 0 22px -4px var(--orange-soft);
+  }
+  .run-btn:active:not(:disabled){ transform:scale(.995); }
+  .run-btn:disabled{
+    background:var(--panel-raised);
+    color:var(--text-faint);
+    cursor:not-allowed;
+    border:1px solid var(--panel-border);
+  }
+
+  /* ---------- readout ---------- */
+  .readout{ display:flex; flex-direction:column; height:100%; }
+
+  .readout-idle{
+    flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    text-align:center; color:var(--text-faint); gap:12px;
+  }
+  .readout-idle .ring{
+    width:52px; height:52px; border-radius:50%;
+    border:1.5px solid var(--panel-border);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:10px;
+  }
+  .readout-idle p{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; max-width:26ch; margin:0;
+  }
+
+  .result{
+    display:none; flex-direction:column; gap:22px;
+    animation: fadeIn .4s ease;
+  }
+  .result.active{ display:flex; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+  .verdict{
+    border:1px solid var(--panel-border);
+    border-radius:var(--radius);
+    padding:22px;
+    background:var(--panel);
+    position:relative;
+    overflow:hidden;
+  }
+  .verdict.tumor{ border-color:#FF4D2E55; }
+  .verdict.tumor::before{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 100% 0%, var(--alert-dim), transparent 60%),
+      var(--alert-dim);
+    pointer-events:none;
+  }
+  .verdict.normal::before{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 100% 0%, var(--orange-dim), transparent 60%),
+      var(--orange-dim);
+    pointer-events:none;
+  }
+  .verdict.uncertain{ border-color:#4A433C; }
+  .verdict.uncertain::before{
+    content:""; position:absolute; inset:0;
+    background:#4A433C22;
+    pointer-events:none;
+  }
+  .verdict-eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px; letter-spacing:0.1em;
+    color:var(--text-muted); text-transform:uppercase;
+    position:relative;
+  }
+  .verdict-label{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:34px; font-weight:700;
+    margin:6px 0 0; position:relative;
+  }
+  .verdict.tumor .verdict-label{ color:var(--alert); }
+  .verdict.normal .verdict-label{ color:var(--orange); }
+  .verdict.uncertain .verdict-label{ color:var(--text-muted); }
+
+  .metric-row{
+    display:flex; justify-content:space-between; align-items:center;
+    border:1px solid var(--panel-border);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    background:var(--panel);
+  }
+  .metric-row .k{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px; color:var(--text-muted);
+    text-transform:uppercase; letter-spacing:0.06em;
+  }
+  .metric-row .v{
+    font-family:'JetBrains Mono', monospace;
+    font-size:20px; font-weight:500; color:var(--text);
+  }
+
+  .confbar-track{
+    height:6px; border-radius:3px;
+    background:var(--panel-raised);
+    overflow:hidden; margin-top:10px;
+  }
+  .confbar-fill{
+    height:100%;
+    background:var(--orange);
+    border-radius:3px; width:0%;
+    transition:width .8s cubic-bezier(.4,0,.2,1);
+  }
+  .confbar-fill.tumor{ background:var(--alert); }
+
+  .meta-grid{
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:1px; background:var(--panel-border);
+    border:1px solid var(--panel-border);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .meta-cell{ background:var(--panel); padding:14px 16px; }
+  .meta-cell .k{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px; color:var(--text-faint);
+    text-transform:uppercase; letter-spacing:0.06em; margin-bottom:5px;
+  }
+  .meta-cell .v{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px; color:var(--text-muted);
+  }
+
+  .disclaimer{
+    font-size:11px; color:var(--text-faint);
+    border-top:1px solid var(--panel-border);
+    padding-top:16px; margin-top:auto; line-height:1.6;
+  }
+
+  .error-box{
+    display:none;
+    border:1px solid #FF4D2E44;
+    background:#FF4D2E12;
+    color:var(--alert);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+  }
+  .error-box.active{ display:block; }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">
+        <h1>Renal Spectral Diagnostics</h1>
+        <p>EfficientNetV2B0 &middot; Dual-Modality Inference</p>
+      </div>
+    </div>
+    <div class="status-chip">
+      <span class="status-dot"></span>
+      MODEL REGISTRY LINKED
+    </div>
+  </div>
+
+  <div class="console">
+
+    <!-- LEFT: intake -->
+    <div class="pane">
+      <div class="pane-label"><span>01 &mdash; Sample Intake</span></div>
+
+      <div class="intro">
+        <h2>Load a renal scan for classification.</h2>
+        <p>Select the imaging modality that matches your source scan, then load a frame to run inference against the trained diagnostic model.</p>
+      </div>
+
+      <div class="modality-select">
+        <button class="modality-btn active" data-modality="hyperspectral" id="btnHyper">
+          MODE / 01
+          <span>Hyperspectral</span>
+        </button>
+        <button class="modality-btn" data-modality="multispectral" id="btnMulti">
+          MODE / 02
+          <span>Multispectral</span>
+        </button>
+      </div>
+
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-empty">
+          <div class="icon">&#9633;</div>
+          <p>DROP SCAN OR CLICK TO BROWSE</p>
+          <p class="sub">JPG / PNG &middot; single frame</p>
+        </div>
+        <img id="previewImg" src="" alt="Loaded scan preview" />
+        <div class="scanline" id="scanline"></div>
+        <div class="scan-overlay" id="scanOverlay">
+          <span id="scanStatusText">RUNNING INFERENCE&hellip;</span>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" />
+      </div>
+
+      <button class="run-btn" id="runBtn" disabled>Run Diagnostic Scan</button>
+    </div>
+
+    <!-- RIGHT: readout -->
+    <div class="pane">
+      <div class="pane-label">
+        <span>02 &mdash; Readout</span>
+        <span id="readoutTimestamp"></span>
+      </div>
+
+      <div class="readout">
+
+        <div class="readout-idle" id="idleState">
+          <div class="ring">&mdash;</div>
+          <p>Awaiting sample. Results will populate here once a scan is loaded and run.</p>
+        </div>
+
+        <div class="error-box" id="errorBox"></div>
+
+        <div class="result" id="resultState">
+          <div class="verdict normal" id="verdictBox">
+            <div class="verdict-eyebrow" id="verdictModality">HYPERSPECTRAL &middot; RESULT</div>
+            <div class="verdict-label" id="verdictLabel">&mdash;</div>
+          </div>
+
+          <div class="metric-row">
+            <div style="flex:1;">
+              <div class="k">Model Confidence</div>
+              <div class="confbar-track"><div class="confbar-fill" id="confFill"></div></div>
+            </div>
+            <div class="v" id="confValue" style="margin-left:16px;">&mdash;</div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-cell">
+              <div class="k">Model</div>
+              <div class="v" id="metaModel">EfficientNetV2B0</div>
+            </div>
+            <div class="meta-cell">
+              <div class="k">Classes</div>
+              <div class="v">Normal / Tumor</div>
+            </div>
+            <div class="meta-cell">
+              <div class="k">Modality</div>
+              <div class="v" id="metaModality">&mdash;</div>
+            </div>
+            <div class="meta-cell">
+              <div class="k">Run ID</div>
+              <div class="v" id="metaRunId">&mdash;</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="disclaimer">
+          Research prototype for spectral kidney imaging classification. Not a certified diagnostic device. Findings require confirmation by a qualified radiologist.
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const previewImg = document.getElementById('previewImg');
+  const runBtn = document.getElementById('runBtn');
+  const scanline = document.getElementById('scanline');
+  const scanOverlay = document.getElementById('scanOverlay');
+
+  const idleState = document.getElementById('idleState');
+  const resultState = document.getElementById('resultState');
+  const errorBox = document.getElementById('errorBox');
+
+  const verdictBox = document.getElementById('verdictBox');
+  const verdictLabel = document.getElementById('verdictLabel');
+  const verdictModality = document.getElementById('verdictModality');
+  const confFill = document.getElementById('confFill');
+  const confValue = document.getElementById('confValue');
+  const metaModality = document.getElementById('metaModality');
+  const metaRunId = document.getElementById('metaRunId');
+  const readoutTimestamp = document.getElementById('readoutTimestamp');
+
+  const btnHyper = document.getElementById('btnHyper');
+  const btnMulti = document.getElementById('btnMulti');
+
+  let currentModality = 'hyperspectral';
+  let base64Image = null;
+
+  function setModality(modality){
+    currentModality = modality;
+    btnHyper.classList.toggle('active', modality === 'hyperspectral');
+    btnMulti.classList.toggle('active', modality === 'multispectral');
+  }
+  btnHyper.addEventListener('click', () => setModality('hyperspectral'));
+  btnMulti.addEventListener('click', () => setModality('multispectral'));
+
+  dropzone.addEventListener('click', () => fileInput.click());
+
+  ['dragover','dragenter'].forEach(evt =>
+    dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add('dragover'); })
+  );
+  ['dragleave','drop'].forEach(evt =>
+    dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.remove('dragover'); })
+  );
+  dropzone.addEventListener('drop', e => {
+    const file = e.dataTransfer.files[0];
+    if (file) loadFile(file);
+  });
+  fileInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) loadFile(file);
+  });
+
+  function loadFile(file){
+    const reader = new FileReader();
+    reader.onload = () => {
+      previewImg.src = reader.result;
+      base64Image = reader.result.split(',')[1];
+      dropzone.classList.add('has-image');
+      runBtn.disabled = false;
+      resultState.classList.remove('active');
+      errorBox.classList.remove('active');
+      idleState.style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function fmtTime(){
+    const d = new Date();
+    return d.toTimeString().slice(0,8);
+  }
+
+  runBtn.addEventListener('click', async () => {
+    if (!base64Image) return;
+
+    runBtn.disabled = true;
+    runBtn.textContent = 'Scanning\u2026';
+    scanline.classList.add('active');
+    scanOverlay.classList.add('active');
+    errorBox.classList.remove('active');
+
+    try {
+      const res = await fetch('/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Image, modality: currentModality })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Inference request failed.');
+      }
+
+      const result = Array.isArray(data) ? data[0] : data;
+      renderResult(result);
+
+    } catch (err) {
+      idleState.style.display = 'none';
+      resultState.classList.remove('active');
+      errorBox.textContent = 'ERROR // ' + err.message;
+      errorBox.classList.add('active');
+    } finally {
+      scanline.classList.remove('active');
+      scanOverlay.classList.remove('active');
+      runBtn.disabled = false;
+      runBtn.textContent = 'Run Diagnostic Scan';
+    }
+  });
+
+  function renderResult(result){
+    idleState.style.display = 'none';
+    errorBox.classList.remove('active');
+    resultState.classList.add('active');
+
+    const label = (result.prediction || '\u2014').toUpperCase();
+    const isTumor = label.includes('TUMOR');
+    const isUncertain = label.includes('UNCERTAIN');
+
+    verdictBox.classList.toggle('tumor', isTumor);
+    verdictBox.classList.toggle('normal', !isTumor && !isUncertain);
+    verdictBox.classList.toggle('uncertain', isUncertain);
+    verdictLabel.textContent = label;
+    verdictModality.textContent = (result.modality || currentModality).toUpperCase() + ' \u00b7 RESULT';
+
+    confFill.classList.toggle('tumor', isTumor);
+
+    const confPct = Math.round((result.confidence || 0) * 100);
+    confValue.textContent = confPct + '%';
+    metaModality.textContent = (result.modality || currentModality);
+    metaRunId.textContent = Math.random().toString(16).slice(2, 8);
+    readoutTimestamp.textContent = fmtTime();
+
+    if (result.warning) {
+      errorBox.textContent = 'NOTICE // ' + result.warning;
+      errorBox.classList.add('active');
+    }
+
+    requestAnimationFrame(() => { confFill.style.width = confPct + '%'; });
+  }
+</script>
+
+</body>
+</html>

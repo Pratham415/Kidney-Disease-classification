@@ -3,9 +3,9 @@ artifacts_root: artifacts
 
 data_ingestion:
   root_dir: artifacts/data_ingestion
-  source_URL: https://drive.google.com/file/d/1w_rMpEHM4itYXSTgjwm0i5dUcFI2luZL/view?usp=drive_link
+  source_URL: https://drive.google.com/file/d/1N-d9EDM7Ty_a3VzILCKO9t1xjYsC1GEm/view?usp=drive_link
   local_data_file: artifacts/data_ingestion/data.zip
-  unzip_dir: artifacts/data_ingestion
+  unzip_dir: artifacts/data_ingestion 
 
 
 prepare_base_model_hyperspectral:
@@ -17,3 +17,14 @@ prepare_base_model_multispectral:
   root_dir: artifacts/prepare_base_model/multispectral
   base_model_path: artifacts/prepare_base_model/multispectral/base_model.h5
   updated_base_model_path: artifacts/prepare_base_model/multispectral/base_model_updated.h5
+
+
+training_hyperspectral:
+  root_dir: artifacts/training/hyperspectral
+  trained_model_path: artifacts/training/hyperspectral/model.h5
+  training_data: artifacts/data_ingestion/data/data/hyperspectral
+
+training_multispectral:
+  root_dir: artifacts/training/multispectral
+  trained_model_path: artifacts/training/multispectral/model.h5
+  training_data: artifacts/data_ingestion/data/data/multispectral
