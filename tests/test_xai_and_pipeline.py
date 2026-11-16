@@ -22,7 +22,20 @@ from cnnClassifier.components.multimodal import (
 from cnnClassifier.pipeline.multimodal_pipeline import MultimodalPrototypePipeline
 from app import app
 
-TEST_IMAGE = "inputImage.jpg"
+TEST_IMAGE = "tests/sample_scan.jpg"
+
+# Ensure test fixture image is always available across all environments (including CI/CD runners)
+if not os.path.exists(TEST_IMAGE) or os.path.getsize(TEST_IMAGE) == 0:
+    import cv2
+    os.makedirs("tests", exist_ok=True)
+    if os.path.exists("inputImage.jpg"):
+        import shutil
+        shutil.copy("inputImage.jpg", TEST_IMAGE)
+    else:
+        _dummy = np.zeros((224, 224, 3), dtype=np.uint8)
+        cv2.ellipse(_dummy, (112, 112), (70, 45), 25, 0, 360, (160, 160, 160), -1)
+        cv2.circle(_dummy, (125, 105), 18, (220, 220, 220), -1)
+        cv2.imwrite(TEST_IMAGE, _dummy)
 
 
 # ============================================================================

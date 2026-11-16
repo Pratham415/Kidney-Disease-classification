@@ -227,3 +227,4 @@ artifacts/
 !.env.example
 .ipynb_checkpoints/
 *.pyc
+!tests/*.jpg
