@@ -2,6 +2,7 @@
 __pycache__/
 *.py[codz]
 *$py.class
+.DS_Store
 
 # C extensions
 *.so
@@ -221,3 +222,8 @@ __marimo__/
 *.jpg
 
 artifacts/
+# Project-specific environment & cache ignores
+.env.*
+!.env.example
+.ipynb_checkpoints/
+*.pyc

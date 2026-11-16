@@ -354,6 +354,143 @@
     font-size:12px;
   }
   .error-box.active{ display:block; }
+
+  /* ---------- XAI Section Styles ---------- */
+  .xai-section{
+    margin-top:24px;
+    border-top:1px solid var(--panel-border);
+    padding-top:20px;
+  }
+  .xai-trigger-btn{
+    width:100%;
+    padding:12px 14px;
+    background:linear-gradient(135deg, #1C1814, #241D17);
+    border:1px solid var(--orange);
+    color:var(--orange);
+    border-radius:var(--radius);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.03em;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:all .2s ease;
+  }
+  .xai-trigger-btn:hover:not(:disabled){
+    background:var(--orange-dim);
+    box-shadow:0 0 16px -2px var(--orange-soft);
+  }
+  .xai-trigger-btn:disabled{
+    opacity:0.6; cursor:not-allowed; border-color:var(--panel-border); color:var(--text-faint);
+  }
+
+  .xai-content{ display:none; margin-top:16px; }
+  .xai-content.active{ display:block; }
+
+  .xai-tabs{
+    display:flex; gap:6px; margin-bottom:14px; overflow-x:auto; padding-bottom:4px;
+  }
+  .xai-tab-btn{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    color:var(--text-muted);
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    padding:7px 12px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .xai-tab-btn:hover{ border-color:#3A322A; color:var(--text); }
+  .xai-tab-btn.active{
+    background:var(--orange-dim);
+    border-color:var(--orange);
+    color:var(--orange);
+  }
+
+  .xai-card{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .xai-card-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:14px; font-weight:600;
+    color:var(--text); margin:0 0 4px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .xai-badge{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px; padding:3px 8px;
+    border-radius:12px; background:var(--panel-raised);
+    border:1px solid var(--panel-border); color:var(--text-muted);
+  }
+
+  .xai-images-row{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0;
+  }
+  .xai-img-box{
+    position:relative; background:#000;
+    border:1px solid var(--panel-border);
+    border-radius:var(--radius); overflow:hidden;
+    aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
+  }
+  .xai-img-box img{ width:100%; height:100%; object-fit:cover; }
+  .xai-img-caption{
+    position:absolute; bottom:0; left:0; right:0;
+    background:rgba(10,10,10,0.85); backdrop-filter:blur(4px);
+    font-family:'JetBrains Mono', monospace; font-size:10px;
+    color:var(--text-muted); padding:5px 8px; text-align:center;
+    border-top:1px solid var(--panel-border);
+  }
+
+  .xai-slider-wrap{
+    display:flex; align-items:center; gap:10px; margin:10px 0 14px;
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-muted);
+  }
+  .xai-slider-wrap input[type=range]{
+    flex:1; accent-color:var(--orange); cursor:pointer;
+  }
+
+  .xai-desc{
+    font-size:12px; line-height:1.6; color:var(--text-muted); margin:0 0 10px;
+  }
+  .xai-caution{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px; line-height:1.5; color:#E08060;
+    background:rgba(255, 77, 46, 0.08);
+    border-left:2px solid var(--alert);
+    padding:8px 10px; margin-top:8px; border-radius:0 var(--radius) var(--radius) 0;
+  }
+
+  .xai-loading-box{
+    display:none; text-align:center; padding:24px 16px;
+    border:1px dashed var(--panel-border); border-radius:var(--radius);
+    background:var(--panel); margin-top:14px;
+  }
+  .xai-loading-box.active{ display:block; }
+  .xai-spinner{
+    width:24px; height:24px; border:2px solid var(--panel-border);
+    border-top-color:var(--orange); border-radius:50%;
+    margin:0 auto 10px; animation:spin .9s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .xai-loading-box p{
+    font-family:'JetBrains Mono', monospace; font-size:11px;
+    color:var(--text-muted); margin:0;
+  }
+
+  .multimodal-diagram{
+    background:#080706; border:1px solid var(--panel-border);
+    border-radius:var(--radius); padding:12px; font-family:'JetBrains Mono', monospace;
+    font-size:10px; color:#A89F95; line-height:1.45; overflow-x:auto; margin:10px 0;
+  }
 </style>
 </head>
 <body>
@@ -457,6 +594,166 @@
             <div class="meta-cell">
               <div class="k">Run ID</div>
               <div class="v" id="metaRunId">&mdash;</div>
+            </div>
+          </div>
+
+          <!-- XAI EXPLAINABILITY SECTION -->
+          <div class="xai-section">
+            <button class="xai-trigger-btn" id="xaiTriggerBtn">
+              <span>&#9889;</span> GENERATE EXPLAINABILITY (GRAD-CAM &middot; LIME &middot; SHAP)
+            </button>
+
+            <div class="xai-loading-box" id="xaiLoadingBox">
+              <div class="xai-spinner"></div>
+              <p id="xaiLoadingText">Computing Neural Feature Attributions (Grad-CAM, LIME, SHAP)&hellip;</p>
+            </div>
+
+            <div class="xai-content" id="xaiContent">
+              <div class="xai-tabs">
+                <button class="xai-tab-btn active" data-tab="tabGradcam">01 &middot; Grad-CAM</button>
+                <button class="xai-tab-btn" data-tab="tabLime">02 &middot; LIME</button>
+                <button class="xai-tab-btn" data-tab="tabShap">03 &middot; SHAP</button>
+                <button class="xai-tab-btn" data-tab="tabComparison">04 &middot; Comparison</button>
+                <button class="xai-tab-btn" data-tab="tabMultimodal">05 &middot; Multimodal AI</button>
+              </div>
+
+              <!-- TAB 1: GRAD-CAM -->
+              <div class="xai-tab-panel" id="tabGradcam">
+                <div class="xai-card">
+                  <div class="xai-card-title">
+                    <span>Gradient-weighted Class Activation Mapping</span>
+                    <span class="xai-badge">Conv Activations</span>
+                  </div>
+                  <p class="xai-desc" id="gradcamDesc">Gradients of the predicted class score flowing into the final convolutional layer (<code>top_activation</code>).</p>
+
+                  <div class="xai-slider-wrap">
+                    <span>Overlay Opacity:</span>
+                    <input type="range" id="gradcamAlpha" min="0" max="1" step="0.05" value="0.45" />
+                    <span id="gradcamAlphaVal">45%</span>
+                  </div>
+
+                  <div class="xai-images-row">
+                    <div class="xai-img-box">
+                      <img id="gradcamOrigImg" src="" alt="Original Scan" />
+                      <div class="xai-img-caption">ORIGINAL SCAN</div>
+                    </div>
+                    <div class="xai-img-box">
+                      <img id="gradcamOverlayImg" src="" alt="Grad-CAM Overlay" />
+                      <div class="xai-img-caption">GRAD-CAM ACTIVATION MAP</div>
+                    </div>
+                  </div>
+
+                  <div class="xai-caution" id="gradcamCaution">
+                    &bull; Coarse 7&times;7 spatial resolution. Shows what activated the CNN filters, NOT surgical tumor margins.
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 2: LIME -->
+              <div class="xai-tab-panel" id="tabLime" style="display:none;">
+                <div class="xai-card">
+                  <div class="xai-card-title">
+                    <span>Local Interpretable Model-Agnostic Explanations</span>
+                    <span class="xai-badge">Superpixel Perturbation</span>
+                  </div>
+                  <p class="xai-desc" id="limeDesc">Segments the scan into superpixels and tests local perturbations via a linear surrogate model.</p>
+
+                  <div class="xai-images-row">
+                    <div class="xai-img-box">
+                      <img id="limeOrigImg" src="" alt="Original Scan" />
+                      <div class="xai-img-caption">ORIGINAL SCAN</div>
+                    </div>
+                    <div class="xai-img-box">
+                      <img id="limeOverlayImg" src="" alt="LIME Superpixels" />
+                      <div class="xai-img-caption">GREEN=SUPPORT &middot; RED=OPPOSE</div>
+                    </div>
+                  </div>
+
+                  <div class="xai-caution">
+                    &bull; Evaluates local surrogate boundaries. Useful for verifying that background artifacts are not steering the prediction.
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 3: SHAP -->
+              <div class="xai-tab-panel" id="tabShap" style="display:none;">
+                <div class="xai-card">
+                  <div class="xai-card-title">
+                    <span>SHapley Additive exPlanations (Kernel SHAP)</span>
+                    <span class="xai-badge">Game Theory</span>
+                  </div>
+                  <p class="xai-desc" id="shapDesc">Computes axiomatic Shapley attribution values across superpixel coalitions.</p>
+
+                  <div class="xai-images-row">
+                    <div class="xai-img-box">
+                      <img id="shapOrigImg" src="" alt="Original Scan" />
+                      <div class="xai-img-caption">ORIGINAL SCAN</div>
+                    </div>
+                    <div class="xai-img-box">
+                      <img id="shapOverlayImg" src="" alt="SHAP Attribution" />
+                      <div class="xai-img-caption">WARM/RED=TUMOR &middot; COOL/BLUE=NORMAL</div>
+                    </div>
+                  </div>
+
+                  <div class="xai-caution">
+                    &bull; Satisfies efficiency, symmetry, dummy, and additivity axioms from cooperative game theory.
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 4: COMPARATIVE ANALYSIS -->
+              <div class="xai-tab-panel" id="tabComparison" style="display:none;">
+                <div class="xai-card">
+                  <div class="xai-card-title">
+                    <span>Multi-Method XAI Comparison</span>
+                    <span class="xai-badge">Triangulation</span>
+                  </div>
+                  <p class="xai-desc">Comparing Grad-CAM, LIME, and SHAP ensures no single explanation method misleads clinical interpretation.</p>
+
+                  <div style="font-family:'JetBrains Mono', monospace; font-size:11px; line-height:1.6; color:var(--text-muted); background:var(--panel-raised); padding:12px; border-radius:var(--radius); border:1px solid var(--panel-border);">
+                    <div style="margin-bottom:8px;"><strong style="color:var(--orange);">Grad-CAM:</strong> White-box internal feature gradients. Instant computation. Shows receptive field activation.</div>
+                    <div style="margin-bottom:8px;"><strong style="color:#4CAF50;">LIME:</strong> Model-agnostic local perturbations. Identifies which superpixel segments support vs oppose the verdict.</div>
+                    <div style="margin-bottom:8px;"><strong style="color:#2196F3;">SHAP:</strong> Axiomatic game theory. Measures marginal contribution of each tissue segment towards/against tumor likelihood.</div>
+                    <div style="color:var(--text); border-top:1px solid var(--panel-border); padding-top:8px; margin-top:8px;">
+                      <strong>Triangulation Consensus:</strong> When all 3 methods highlight overlapping renal parenchyma regions, confidence in model focus is substantially heightened.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 5: MULTIMODAL AI EXTENSION -->
+              <div class="xai-tab-panel" id="tabMultimodal" style="display:none;">
+                <div class="xai-card">
+                  <div class="xai-card-title">
+                    <span>Multimodal AI &middot; Clinical Biomarker Fusion</span>
+                    <span class="xai-badge">Architecture Proposal</span>
+                  </div>
+                  <p class="xai-desc">
+                    Dual-branch architecture designed to fuse renal CT imaging features with structured electronic health record (EHR) biomarkers.
+                  </p>
+
+                  <div class="multimodal-diagram">
++------------------------+      +-------------------------------+
+|  CT Scan (224x224x3)   |      |  Clinical Biomarkers (Tabular)|
+|  EfficientNetV2B0 CNN  |      |  [Age, Creatinine, BUN, eGFR] |
+|  Global Pool (1280)    |      |  Dense (64) -&gt; BN -&gt; Dense (32)
+|  Dense (128, ReLU)     |      |                               |
++-----------+------------+      +---------------+---------------+
+            \                                  /
+             \----&gt; [Late Fusion Layer] &lt;-----/
+                     Concatenate (160)
+                             |
+                     Dense (64, ReLU) -&gt; Dropout (0.3)
+                             |
+                   Dense (2, Softmax Output)
+                  </div>
+
+                  <div style="font-size:11px; color:var(--text-muted); line-height:1.6; margin-top:10px;">
+                    <strong style="color:var(--text);">Data Transparency Statement:</strong> The current project dataset contains exclusively image scans. The multimodal model code (<code>src/cnnClassifier/components/multimodal.py</code>) is modularly implemented and ready for training once paired patient laboratory tables are linked.
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -607,7 +904,131 @@
       errorBox.classList.add('active');
     }
 
+    // Reset XAI section for the new scan
+    if (xaiContent) xaiContent.classList.remove('active');
+    if (xaiLoadingBox) xaiLoadingBox.classList.remove('active');
+    if (xaiTriggerBtn) {
+      xaiTriggerBtn.disabled = false;
+      xaiTriggerBtn.innerHTML = '<span>&#9889;</span> GENERATE EXPLAINABILITY (GRAD-CAM &middot; LIME &middot; SHAP)';
+    }
+
     requestAnimationFrame(() => { confFill.style.width = confPct + '%'; });
+  }
+
+  // ---------- XAI INTERACTION LOGIC ----------
+  const xaiTriggerBtn = document.getElementById('xaiTriggerBtn');
+  const xaiLoadingBox = document.getElementById('xaiLoadingBox');
+  const xaiContent = document.getElementById('xaiContent');
+  const xaiTabBtns = document.querySelectorAll('.xai-tab-btn');
+  const xaiTabPanels = document.querySelectorAll('.xai-tab-panel');
+  const gradcamAlpha = document.getElementById('gradcamAlpha');
+  const gradcamAlphaVal = document.getElementById('gradcamAlphaVal');
+
+  const gradcamOrigImg = document.getElementById('gradcamOrigImg');
+  const gradcamOverlayImg = document.getElementById('gradcamOverlayImg');
+  const limeOrigImg = document.getElementById('limeOrigImg');
+  const limeOverlayImg = document.getElementById('limeOverlayImg');
+  const shapOrigImg = document.getElementById('shapOrigImg');
+  const shapOverlayImg = document.getElementById('shapOverlayImg');
+
+  // Tab switching
+  xaiTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      xaiTabBtns.forEach(b => b.classList.remove('active'));
+      xaiTabPanels.forEach(p => p.style.display = 'none');
+      btn.classList.add('active');
+      const targetId = btn.getAttribute('data-tab');
+      const targetPanel = document.getElementById(targetId);
+      if (targetPanel) targetPanel.style.display = 'block';
+    });
+  });
+
+  // Client-side canvas for real-time 60fps Grad-CAM opacity blending
+  const blendCanvas = document.createElement('canvas');
+  const blendCtx = blendCanvas.getContext('2d');
+  const origImgObj = new Image();
+  const heatmapImgObj = new Image();
+
+  function renderGradcamBlended(alpha) {
+    if (!origImgObj.src || !heatmapImgObj.src) return;
+    const w = origImgObj.naturalWidth || 224;
+    const h = origImgObj.naturalHeight || 224;
+    blendCanvas.width = w;
+    blendCanvas.height = h;
+
+    blendCtx.clearRect(0, 0, w, h);
+    blendCtx.globalAlpha = 1.0;
+    blendCtx.drawImage(origImgObj, 0, 0, w, h);
+
+    blendCtx.globalAlpha = alpha;
+    blendCtx.drawImage(heatmapImgObj, 0, 0, w, h);
+
+    gradcamOverlayImg.src = blendCanvas.toDataURL('image/png');
+  }
+
+  // Opacity Slider handler (instant 60fps client-side blending)
+  if (gradcamAlpha) {
+    gradcamAlpha.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      gradcamAlphaVal.textContent = Math.round(val * 100) + '%';
+      renderGradcamBlended(val);
+    });
+  }
+
+  // Trigger button click
+  if (xaiTriggerBtn) {
+    xaiTriggerBtn.addEventListener('click', async () => {
+      if (!base64Image) return;
+
+      xaiTriggerBtn.disabled = true;
+      xaiTriggerBtn.textContent = 'COMPUTING NEURAL ATTRIBUTIONS\u2026';
+      xaiLoadingBox.classList.add('active');
+      xaiContent.classList.remove('active');
+
+      try {
+        const res = await fetch('/explain', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64Image, modality: currentModality, method: 'all' })
+        });
+
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          throw new Error(data.error || 'Failed to compute XAI explanations.');
+        }
+
+        // Cache images for instant client-side slider blending
+        origImgObj.onload = () => {
+          if (heatmapImgObj.complete) renderGradcamBlended(parseFloat(gradcamAlpha.value || 0.45));
+        };
+        heatmapImgObj.onload = () => {
+          if (origImgObj.complete) renderGradcamBlended(parseFloat(gradcamAlpha.value || 0.45));
+        };
+        origImgObj.src = data.original_image;
+        heatmapImgObj.src = data.gradcam.heatmap_image;
+
+        // Populate base images
+        gradcamOrigImg.src = data.original_image;
+        gradcamOverlayImg.src = data.gradcam.overlay_image;
+
+        limeOrigImg.src = data.original_image;
+        limeOverlayImg.src = data.lime.overlay_image;
+
+        shapOrigImg.src = data.original_image;
+        shapOverlayImg.src = data.shap.overlay_image;
+
+        xaiContent.classList.add('active');
+        xaiTriggerBtn.innerHTML = '<span>&#10003;</span> RE-GENERATE EXPLANATIONS';
+
+      } catch (err) {
+        errorBox.textContent = 'XAI ERROR // ' + err.message;
+        errorBox.classList.add('active');
+        xaiTriggerBtn.innerHTML = '<span>&#9889;</span> RETRY EXPLAINABILITY';
+      } finally {
+        xaiLoadingBox.classList.remove('active');
+        xaiTriggerBtn.disabled = false;
+      }
+    });
   }
 </script>
 

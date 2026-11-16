@@ -13,11 +13,11 @@ class EvaluationPipeline:
         config = ConfigurationManager()
 
         for modality in ["hyperspectral", "multispectral"]:
-            logger.info(f"Evaluating model for {modality} modality")
+            logger.info(f">>>>>> Evaluating model for {modality} modality <<<<<<")
             eval_config = config.get_evaluation_config(modality)
             evaluation = Evaluation(eval_config)
-            evaluation.evaluation()
-            evaluation.log_into_mlflow(modality)
+            evaluation.evaluation(modality=modality)
+            evaluation.log_into_mlflow(modality=modality)
 
 
 if __name__ == '__main__':

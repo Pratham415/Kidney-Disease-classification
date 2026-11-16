@@ -1,7 +1,12 @@
+# pyrefly: ignore[missing-import]
 from cnnClassifier import logger
+# pyrefly: ignore[missing-import]
 from cnnClassifier.pipeline.stage_01_data_ingestion import DataIngestionPipeline
+# pyrefly: ignore[missing-import]
 from cnnClassifier.pipeline.stage_02_prepare_base_model import PrepareBaseModelTrainingPipeline
+# pyrefly: ignore[missing-import]
 from cnnClassifier.pipeline.stage_03_training import ModelTrainingPipeline
+# pyrefly: ignore[missing-import]
 from cnnClassifier.pipeline.stage_04_evaluation import EvaluationPipeline
 
 

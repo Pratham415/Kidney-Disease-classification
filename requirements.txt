@@ -1,19 +1,40 @@
-tensorflow==2.12.0
-pandas 
+# Deep Learning Framework (Platform-aware specification)
+tensorflow-macos==2.12.0; sys_platform == 'darwin' and platform_machine == 'arm64'
+tensorflow-metal; sys_platform == 'darwin' and platform_machine == 'arm64'
+tensorflow==2.12.0; sys_platform != 'darwin' or platform_machine != 'arm64'
+
+# Data Processing & Computer Vision
+pandas
+numpy
+scipy
+opencv-python
+scikit-image>=0.21.0
+scikit-learn
+
+# MLOps & Experiment Tracking
 dvc
 mlflow==2.2.2
-notebook
-numpy
-matplotlib
-seaborn
-python-box==6.0.2
-pyYAML
-tqdm
-ensure==1.0.2
-joblib
-types-PyYAML
-scipy
+python-dotenv
+gdown
+
+# Explainable AI (XAI)
+shap==0.44.1
+lime==0.2.0.1
+
+# Web Framework & API
 Flask
 Flask-Cors
-gdown
+
+# Utilities & Configuration
+python-box==6.0.2
+pyYAML
+types-PyYAML
+ensure==1.0.2
+joblib
+tqdm
+matplotlib
+seaborn
+notebook
+
+# Local Package Installation
 -e .

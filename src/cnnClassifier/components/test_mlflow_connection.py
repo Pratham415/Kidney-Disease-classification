@@ -1,11 +1,21 @@
 import os
+import sys
+# pyrefly: ignore[missing-import]
 import mlflow
 
-os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/Pratham415/Kidney-Disease-classification.mlflow'
-os.environ['MLFLOW_TRACKING_USERNAME'] = 'fbea9abf7cb94ad9ddad624ef8b47700d5f8f126'
-os.environ['MLFLOW_TRACKING_PASSWORD'] = 'fbea9abf7cb94ad9ddad624ef8b47700d5f8f126'
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
-mlflow.set_tracking_uri(os.environ['MLFLOW_TRACKING_URI'])
+tracking_uri = os.environ.get('MLFLOW_TRACKING_URI')
+if not tracking_uri:
+    print("❌ MLFLOW_TRACKING_URI is not set.")
+    print("Please set MLFLOW_TRACKING_URI, MLFLOW_TRACKING_USERNAME, and MLFLOW_TRACKING_PASSWORD in your environment or .env file.")
+    sys.exit(1)
+
+mlflow.set_tracking_uri(tracking_uri)
 
 with mlflow.start_run(run_name="connection_test"):
     mlflow.log_param("test", "hello")
