@@ -16,6 +16,8 @@ jobs:
   integration:
     name: Continuous Integration & Automated Testing
     runs-on: ubuntu-latest
+    outputs:
+      has_aws: ${{ steps.check_secrets.outputs.has_aws }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -44,11 +46,22 @@ jobs:
         run: |
           python -m pytest -v tests/
 
+      - name: Check Deployment Credentials
+        id: check_secrets
+        env:
+          AWS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        run: |
+          if [ -n "$AWS_KEY" ]; then
+            echo "has_aws=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_aws=false" >> "$GITHUB_OUTPUT"
+          fi
+
   build-and-push-ecr-image:
     name: Continuous Delivery
     needs: integration
     runs-on: ubuntu-latest
-    if: "${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != '' && secrets.ECR_REPOSITORY_NAME != '' }}"
+    if: needs.integration.outputs.has_aws == 'true'
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -78,12 +91,12 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
   Continuous-Deployment:
-    needs: build-and-push-ecr-image
+    needs: [integration, build-and-push-ecr-image]
     runs-on: self-hosted
-    if: "${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_ECR_LOGIN_URI != '' }}"
+    if: needs.integration.outputs.has_aws == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
