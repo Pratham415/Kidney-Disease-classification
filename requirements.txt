@@ -25,6 +25,9 @@ lime==0.2.0.1
 Flask
 Flask-Cors
 
+# Testing & Quality Assurance
+pytest>=7.0.0
+
 # Utilities & Configuration
 python-box==6.0.2
 pyYAML
