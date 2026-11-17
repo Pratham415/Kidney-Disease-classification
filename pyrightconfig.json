@@ -1,0 +1,14 @@
+{
+  "include": [
+    "src",
+    "research",
+    "tests",
+    "app.py",
+    "main.py"
+  ],
+  "extraPaths": [
+    "src"
+  ],
+  "venvPath": "/opt/anaconda3/envs",
+  "venv": "cnncls"
+}

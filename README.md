@@ -4,7 +4,7 @@
 [![TensorFlow 2.12](https://img.shields.io/badge/TensorFlow-2.12.0-orange.svg)](https://tensorflow.org/)
 [![DVC Tracked](https://img.shields.io/badge/DVC-Pipelines-9cf.svg)](https://dvc.org/)
 [![MLflow](https://img.shields.io/badge/MLflow-Experiment%20Tracking-0194E2.svg)](https://mlflow.org/)
-[![Tests Passing](https://img.shields.io/badge/pytest-26%20passed-brightgreen.svg)](docs/TESTING_REPORT.md)
+[![Tests Passing](https://img.shields.io/badge/pytest-26%20passed-brightgreen.svg)](#16-testing-instructions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 An end-to-end, production-grade Deep Learning system for classifying renal disease (**Normal** vs. **Tumor**) from spectral computed tomography (CT) scans. The platform integrates **EfficientNetV2B0** transfer learning, multi-method **Explainable AI (Grad-CAM, LIME, Kernel SHAP)**, an experimental **Multimodal AI** clinical biomarker fusion blueprint, automated **MLOps pipelines (DVC, MLflow, Docker)**, and a modern diagnostic web dashboard.
@@ -62,8 +62,6 @@ flowchart LR
     H -.-> G
 ```
 
-For detailed component decomposition, see [docs/PROJECT_ARCHITECTURE.md](docs/PROJECT_ARCHITECTURE.md).
-
 ---
 
 ## 6. Dataset Information
@@ -87,8 +85,6 @@ For detailed component decomposition, see [docs/PROJECT_ARCHITECTURE.md](docs/PR
   prediction = tf.keras.layers.Dense(units=2, activation="softmax")(x)
   ```
 - **Label Mapping:** `0: Normal`, `1: Tumor`.
-
-For complete architectural details, see [docs/MODEL_EXPLANATION.md](docs/MODEL_EXPLANATION.md).
 
 ---
 
@@ -136,8 +132,6 @@ The system provides on-demand multi-method explainability to inspect model decis
 - Satisfies foundational efficiency, symmetry, dummy, and additivity axioms.
 - Visualized on a diverging `coolwarm` colormap (Warm/Red = Tumor push; Cool/Blue = Normal push).
 
-For algorithmic derivations and comparisons, see [docs/XAI_DOCUMENTATION.md](docs/XAI_DOCUMENTATION.md).
-
 ---
 
 ## 11. Multimodal Architecture Blueprint
@@ -149,8 +143,6 @@ Designed as a future-ready extension for clinical EHR integration:
 - **Validation:** Enforces strict physiological bounds and z-score feature scaling.
 - **Status:** Experimental architecture. No synthetic patient data has been fabricated.
 
-For full clinical specifications, see [docs/MULTIMODAL_DOCUMENTATION.md](docs/MULTIMODAL_DOCUMENTATION.md).
-
 ---
 
 ## 12. MLOps Workflow: DVC, MLflow & CI/CD
@@ -160,8 +152,6 @@ For full clinical specifications, see [docs/MULTIMODAL_DOCUMENTATION.md](docs/MU
 - **MLflow Tracking:** Logs parameters, metrics (`loss`, `accuracy`, `f1_score`), and registers models under `EfficientNetV2B0_{modality}`.
 - **Continuous Integration:** Automated GitHub Actions workflow executes `pytest` and bytecode validation on every push.
 - **Continuous Deployment:** Containerized image built via `Dockerfile` and deployed to AWS ECR/EC2.
-
-For MLOps setup details, see [docs/MLOPS_WORKFLOW.md](docs/MLOPS_WORKFLOW.md).
 
 ---
 
@@ -231,8 +221,6 @@ Run bytecode verification:
 ```bash
 python -m compileall src app.py main.py
 ```
-
-For test breakdown, see [docs/TESTING_REPORT.md](docs/TESTING_REPORT.md).
 
 ---
 
